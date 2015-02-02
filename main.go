@@ -59,8 +59,8 @@ type Message struct {
 	Message string `json:"message"`
 }
 
-func SendMessage(client *xmpp.Client, to, msg string) {
-	client.Send(xmpp.Chat{
+func SendMessage(client *xmpp.Client, to, msg string) (n int, err error) {
+	return client.Send(xmpp.Chat{
 		Remote: to,
 		Type:   "chat",
 		Text:   msg,
@@ -89,7 +89,7 @@ func main() {
 		Debug:         config.JabberDebug,
 		Session:       true,
 		Status:        "online",
-		StatusMessage: "",
+		StatusMessage: "online",
 	}
 
 	talk, err = options.NewClient()
@@ -109,9 +109,14 @@ func main() {
 		var m Message
 		c.Bind(&m)
 
+		log.Printf("%v", m)
 		if m.To != "" && m.Message != "" {
-			SendMessage(talk, m.To, m.Message)
-			c.JSON(200, gin.H{"status": true})
+			_, err := SendMessage(talk, m.To, m.Message)
+			if err != nil {
+				c.JSON(200, gin.H{"status": false})
+			} else {
+				c.JSON(200, gin.H{"status": true})
+			}
 		} else {
 			c.JSON(200, gin.H{"status": false})
 		}
