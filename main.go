@@ -18,6 +18,7 @@ var config = struct {
 	JabberDebug    bool   `json:"jabber_debug"`
 }{}
 
+var configPath string
 var talk *xmpp.Client
 
 const SERVER_INFO = "NotifyServer"
@@ -65,7 +66,14 @@ func SendMessage(client *xmpp.Client, to, msg string) {
 }
 
 func init() {
-	easyconfig.Parse("./config.json", &config)
+	flag.StringVar(&configPath, "configPath", "config.json", "Path to json file config")
+	flag.Parse()
+	if flag.NFlag() == 0 {
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	easyconfig.Parse(configPath, &config)
 }
 
 func main() {
