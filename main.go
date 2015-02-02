@@ -2,11 +2,13 @@ package main
 
 import (
 	"crypto/tls"
+	"flag"
 	"github.com/gin-gonic/gin"
 	"github.com/mattn/go-xmpp"
 	"github.com/mimicloud/easyconfig"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
