@@ -1,0 +1,7 @@
+{
+    "listen": ":9090",
+    "jabber_server": "example.com:5222",
+    "jabber_username": "bot@example.com",
+    "jabber_password": "123456",
+    "jabber_debug": true
+}
