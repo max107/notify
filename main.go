@@ -93,6 +93,11 @@ func main() {
 	}
 
 	talk, err = options.NewClient()
+	go func(client *xmpp.Client) {
+		for _ = range time.Tick(3 * time.Second) {
+			client.PingC2S(config.JabberUsername, config.JabberServer)
+		}
+	}(talk)
 
 	if err != nil {
 		log.Fatal(err)
@@ -113,6 +118,7 @@ func main() {
 		if m.To != "" && m.Message != "" {
 			_, err := SendMessage(talk, m.To, m.Message)
 			if err != nil {
+				log.Printf("%s", err)
 				c.JSON(200, gin.H{"status": false})
 			} else {
 				c.JSON(200, gin.H{"status": true})
