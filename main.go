@@ -78,8 +78,7 @@ func init() {
 	easyconfig.Parse(configPath, &config)
 }
 
-func main() {
-	var err error
+func GetXmppClient() (talk *xmpp.Client, err error) {
 	options := xmpp.Options{
 		Host:          config.JabberServer,
 		User:          config.JabberUsername,
@@ -99,6 +98,12 @@ func main() {
 		}
 	}(talk)
 
+	return talk, err
+}
+
+func main() {
+	var err error
+	talk, err = GetXmppClient()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -118,8 +123,12 @@ func main() {
 		if m.To != "" && m.Message != "" {
 			_, err := SendMessage(talk, m.To, m.Message)
 			if err != nil {
-				log.Printf("%s", err)
-				c.JSON(200, gin.H{"status": false})
+				talk, err = GetXmppClient()
+				_, errsnd := SendMessage(talk, m.To, m.Message)
+				if errsnd != nil {
+					log.Printf("%s", err)
+					c.JSON(200, gin.H{"status": false})
+				}
 			} else {
 				c.JSON(200, gin.H{"status": true})
 			}
